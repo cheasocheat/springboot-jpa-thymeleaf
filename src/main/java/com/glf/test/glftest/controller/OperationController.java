@@ -5,9 +5,7 @@ import com.glf.test.glftest.domain.OperationArea;
 import com.glf.test.glftest.domain.Province;
 import com.glf.test.glftest.domain.Receipt;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +59,9 @@ public class OperationController {
         List<Province> lstProvinces = new ArrayList<>();
         List<Operation> lstOperations = new ArrayList<>();
 
-        String endPoint = servletContext.getContextPath();
+        //String endPoint = servletContext.getContextPath();
 
-        logger.info("End Point = " + endPoint);
+        //logger.info("End Point = " + endPoint);
 
         header.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> requestEntity = new HttpEntity<>(header);
@@ -138,36 +136,30 @@ public class OperationController {
         if (operationArea != null) {
             header.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Operation> entity = new HttpEntity<>(header);
-            if(operationId > 0){
+            if (operationId > 0) {
                 ResponseEntity<Operation> operationResponseEntity = restTemplate.exchange("http://localhost:8080/gltest/api/v1/operations/" + operationId, HttpMethod.GET, entity, new ParameterizedTypeReference<Operation>() {
                 });
                 if (operationResponseEntity != null && operationResponseEntity.getStatusCode() == HttpStatus.OK) {
                     Operation operation = operationResponseEntity.getBody();
-                    if(operation != null){
-                        operation.setLstOpeAreas(Arrays.asList(
-                            operationArea
-                        ));
+                    if (operation != null) {
 
+
+                        Set<OperationArea> operationAreaSet = new HashSet<OperationArea>() {{
+                            add(operationArea);
+                        }};
+
+                        operation.setOperationAreas(operationAreaSet);
 
                         //Save to OperationArea
                         operationArea.setOperation(operation);
-                        HttpEntity<OperationArea> reqEntity = new HttpEntity<>(operationArea,header);
+                        HttpEntity<OperationArea> reqEntity = new HttpEntity<>(operationArea, header);
                         ResponseEntity<OperationArea> resEntity =
-                                restTemplate.exchange("http://localhost:8080/gltest/api/v1/operationarea", HttpMethod.POST, reqEntity, OperationArea.class);
-                        if (resEntity != null) {
-
-                        }
-
-                        //Update Operation
-                       /* ResponseEntity<OperationArea> resEntity =
-                                restTemplate.exchange("http://localhost:8080/gltest/api/v1/operationarea", HttpMethod.PUT, requestEntity, OperationArea.class);
+                                restTemplate.exchange("http://localhost:8080/gltest/api/v1/operationarea?operation_id=" + operationId, HttpMethod.POST, reqEntity, OperationArea.class);
                         if (resEntity != null) {
                             if (resEntity.getStatusCode().equals(HttpStatus.CREATED)) {
                                 return "redirect:/operation";
-                            } else if (resEntity.getStatusCode().equals(HttpStatus.CONFLICT)) {
-                                return "redirect:/error";
                             }
-                        }*/
+                        }
                     }
                 }
             }

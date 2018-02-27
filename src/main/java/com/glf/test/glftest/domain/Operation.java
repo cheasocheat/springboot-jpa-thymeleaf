@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -24,7 +25,7 @@ public class Operation extends BaseEntity{
     private Double defDltCharge;
     private Double defWage;
     private Long receiptId;
-    private List<OperationArea> lstOpeAreas;
+    private Set<OperationArea> operationAreas;
 
     public Operation(){
         this.setCreatedUser("Socheat");
@@ -106,13 +107,12 @@ public class Operation extends BaseEntity{
         this.receiptId = receiptId;
     }
 
-    @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, targetEntity = OperationArea.class, mappedBy = "operation", cascade = CascadeType.ALL)
-    public List<OperationArea> getLstOpeAreas() {
-        return lstOpeAreas;
+    public Set<OperationArea> getOperationAreas() {
+        return operationAreas;
     }
 
-    public void setLstOpeAreas(List<OperationArea> lstOpeAreas) {
-        this.lstOpeAreas = lstOpeAreas;
+    public void setOperationAreas(Set<OperationArea> operationAreas) {
+        this.operationAreas = operationAreas;
     }
 }

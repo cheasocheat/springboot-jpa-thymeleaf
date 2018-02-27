@@ -43,4 +43,21 @@ public class ReceiptRestTest {
             service.saveReceipt(receipt);
         }
     }
+
+    @Test
+    public void deleteReceiptById() {
+        service.deleteReceipt(48l);
+    }
+
+    @Test
+    public void findOperationByCode() {
+        Receipt receipt = service.findByCode("RECEIPT003");
+        System.out.println(">>>> " + receipt.getId());
+    }
+
+    @Test
+    public void findAllReceipt() {
+        List<Receipt> lstOperations = service.getListReceipt();
+        lstOperations.forEach(element -> System.out.println(element.getId() + " == " + element.getCode()));
+    }
 }

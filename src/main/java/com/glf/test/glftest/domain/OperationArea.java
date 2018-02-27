@@ -71,7 +71,7 @@ public class OperationArea extends BaseEntity {
     }
 
 
-    @JsonBackReference
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "op_id")
     public Operation getOperation() {

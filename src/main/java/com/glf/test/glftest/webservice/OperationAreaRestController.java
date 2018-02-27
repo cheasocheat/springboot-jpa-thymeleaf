@@ -1,7 +1,9 @@
 package com.glf.test.glftest.webservice;
 
+import com.glf.test.glftest.domain.Operation;
 import com.glf.test.glftest.domain.OperationArea;
 import com.glf.test.glftest.service.OperationAreaService;
+import com.glf.test.glftest.service.OperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +21,14 @@ import java.util.List;
 public class OperationAreaRestController {
 
     @Autowired
-    private OperationAreaService service;
+    private OperationAreaService operationAreaService;
+
+    @Autowired
+    private OperationService operationService;
 
     @GetMapping(value = "/operationareas/", produces = "application/json")
-    public ResponseEntity<OperationArea> getListOperationAreas(){
-        List<OperationArea> lstOperations = service.getListOperationAreas();
+    public ResponseEntity<OperationArea> getListOperationAreas() {
+        List<OperationArea> lstOperations = operationAreaService.getListOperationAreas();
         if (lstOperations != null && !lstOperations.isEmpty()) {
             return new ResponseEntity(lstOperations, HttpStatus.OK);
         }
@@ -32,8 +37,8 @@ public class OperationAreaRestController {
 
 
     @GetMapping(value = "/operationareas", produces = "application/json")
-    public ResponseEntity<OperationArea> getOperationAreasByOperationId(@RequestParam("operate_id") Long operateId){
-        List<OperationArea> lstOperations = service.getListOperationAreasByOperationId(operateId);
+    public ResponseEntity<OperationArea> getOperationAreasByOperationId(@RequestParam("operate_id") Long operateId) {
+        List<OperationArea> lstOperations = operationAreaService.getListOperationAreasByOperationId(operateId);
         if (lstOperations != null && !lstOperations.isEmpty()) {
             return new ResponseEntity(lstOperations, HttpStatus.OK);
         }
@@ -42,23 +47,32 @@ public class OperationAreaRestController {
 
 
     @PostMapping(value = "/operationarea", produces = "application/json")
-    public ResponseEntity<Void> addOperation(@RequestBody OperationArea operationArea) {
+    public ResponseEntity<OperationArea> addOperation(@RequestBody OperationArea operationArea, @RequestParam("operation_id") Long operationId) {
       /*  OperationArea dbOperation = service.findByProvinceId(operationArea.getProvinceId());
         if(dbOperation != null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }*/
-        boolean success = service.saveOperationArea(operationArea);
-        if (success) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        }else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+
+      /*
+      *  Because one to many jpa mapping have problem with json that why i decided to use this way
+      * */
+      if(operationId > 0 ){
+          Operation operation = operationService.findById(operationId);
+          if(operation != null){
+              operationArea.setOperation(operation);
+              boolean success = operationAreaService.saveOperationArea(operationArea);
+              if (success) {
+                  return new ResponseEntity<>(operationArea,HttpStatus.CREATED);
+              }
+          }
+      }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping(value = "/operationareas/{id}", produces = "application/json")
     public ResponseEntity<OperationArea> updateOperation(@PathVariable("id") Long id, @RequestBody OperationArea operationArea) {
-        OperationArea dbOperationArea = service.findById(id);
-        if(dbOperationArea == null){
+        OperationArea dbOperationArea = operationAreaService.findById(id);
+        if (dbOperationArea == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         dbOperationArea.setProvinceId(operationArea.getProvinceId());
@@ -67,8 +81,8 @@ public class OperationAreaRestController {
         dbOperationArea.setStatus(operationArea.getStatus());
         dbOperationArea.setUpdatedAt(new Date());
         dbOperationArea.setUpdatedUser("Socheat");
-        boolean success = service.saveOperationArea(operationArea);
-        if(success){
+        boolean success = operationAreaService.saveOperationArea(operationArea);
+        if (success) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -77,11 +91,11 @@ public class OperationAreaRestController {
 
     @DeleteMapping(value = "/operationareas/{id}", produces = "application/json")
     public ResponseEntity<OperationArea> deleteOperation(@PathVariable("id") Long id) {
-        OperationArea operationArea = service.findById(id);
-        if(operationArea == null){
+        OperationArea operationArea = operationAreaService.findById(id);
+        if (operationArea == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        service.deleteOperationAreaById(id);
+        operationAreaService.deleteOperationAreaById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
