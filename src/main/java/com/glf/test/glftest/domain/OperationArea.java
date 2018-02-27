@@ -9,10 +9,10 @@ import javax.persistence.*;
  * Created on 2/27/18 10:54
  */
 @Entity(name = "tb_operation_area")
-public class OperationArea extends BaseEntity{
+public class OperationArea extends BaseEntity {
     private Long provinceId;
-    private Double dtlChange;
-    private Double dtlWage;
+    private Double dltCharge;
+    private Double dltWage;
     private Operation operation;
 
     @Override
@@ -28,7 +28,7 @@ public class OperationArea extends BaseEntity{
         super.setId(id);
     }
 
-    @Column(name = "op_prvin_id",nullable = false)
+    @Column(name = "op_prvin_id", nullable = false)
     public Long getProvinceId() {
         return provinceId;
     }
@@ -37,22 +37,22 @@ public class OperationArea extends BaseEntity{
         this.provinceId = provinceId;
     }
 
-    @Column(name = "op_dtl_change")
-    public Double getDtlChange() {
-        return dtlChange;
+
+    @Column(name = "op_dlt_charge", nullable = false)
+    public Double getDltCharge() {
+        return dltCharge;
     }
 
-    public void setDtlChange(Double dtlChange) {
-        this.dtlChange = dtlChange;
+    public void setDltCharge(Double dltCharge) {
+        this.dltCharge = dltCharge;
+    }
+    @Column(name = "op_dlt_wage")
+    public Double getDltWage() {
+        return dltWage;
     }
 
-    @Column(name = "op_dtl_wage")
-    public Double getDtlWage() {
-        return dtlWage;
-    }
-
-    public void setDtlWage(Double dtlWage) {
-        this.dtlWage = dtlWage;
+    public void setDltWage(Double dltWage) {
+        this.dltWage = dltWage;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

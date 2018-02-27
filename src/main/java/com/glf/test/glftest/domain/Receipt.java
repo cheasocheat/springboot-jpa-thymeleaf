@@ -1,8 +1,10 @@
 package com.glf.test.glftest.domain;
 
 import com.glf.test.glftest.domain.base.BaseEntity;
+import com.glf.test.glftest.util.RecordStatus;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Developer : cheasocheat
@@ -12,6 +14,19 @@ import javax.persistence.*;
 public class Receipt extends BaseEntity {
     private String code;
     private Operation operation;
+
+    public Receipt(){
+        this.setCreatedUser("Socheat");
+        this.setUpdatedUser("Socheat");
+        this.setCreatedAt(new Date());
+        this.setUpdatedAt(new Date());
+        this.setStatus(RecordStatus.PUB);
+    }
+
+    public Receipt(Long id, String code){
+        this.id = id;
+        this.code = code;
+    }
 
     @Override
     @Id

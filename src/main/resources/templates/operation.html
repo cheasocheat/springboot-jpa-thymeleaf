@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/layout">
+<head>
+    <title>Welcome to One Event</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
+
+</head>
+
+<body>
+
+<section layout:fragment="content">
+    <!-- FORM OPERATION -->
+    <br/><br/>
+
+    <form class="form-horizontal" th:object="${operation}"  th:action="@{/operation/add}" method="post" id="formOperation">
+        <div class="row">
+            <h3>Operation</h3>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="op_code">Operation Code *</label>
+                <input type="text" class="form-control" id="op_code" th:field="*{code}"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="op_desc">Operation Desc *</label>
+                <input type="text" class="form-control" id="op_desc" th:field="*{desc}"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="receip_code">Receipt Code *</label>
+                <select class="form-control" id="receip_code">
+                    <option th:value="null">Please select</option>
+                    <option th:each="receipt : ${lstReceipts}" th:value="${receipt.getId()}" th:text="${receipt.getCode()}">code
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="op_price">Price *</label>
+                <input type="text" class="form-control" id="op_price" th:field="*{price}"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="def_dlt_charge">Default DLT Charge *</label>
+                <input th:readonly="readonly" type="text" class="form-control" id="def_dlt_charge" th:value="${0.0}" th:field="*{defDltCharge}"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="def_dlt_wage">Default Wage *</label>
+                <input th:readonly="readonly" type="text" class="form-control" id="def_dlt_wage" th:value="${0.0}" th:field="*{defDltWage}"/>
+            </div>
+        </div>
+
+        <br/>
+
+        <!--BUTTON DIV -->
+        <div class="row">
+            <div class="col-sm-4">
+                <button class="btn btn-success" id="btnAdd"><span class="glyphicon glyphicon-plus"></span> Add </button>
+                <button class="btn btn-info" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+            </div>
+        </div>
+
+    </form>
+
+
+
+    <br/><br/>
+    <!-- DATA TABLE DEV -->
+    <div>
+        <table id="operation_table" class="table table-bordered dt-responsive" cellspacing="0" width="100%">
+            <thead>
+            <tr class="list_header_ag">
+                <th>Operation Code</th>
+                <th>Operation Desc</th>
+                <th>Receipt Code</th>
+                <th>Price</th>
+                <th>DLTChange</th>
+                <th>Wage</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+    <br/><br/>
+
+    <div class="row">
+        <form class="form-horizontal" th:object="${opeationArea}"  th:action="@{/operation_area/add}" method="post" id="formOperationArea">
+            <div class="row">
+                <h3>Operation By Area</h3>
+            </div>
+
+
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label for="receip_code">Province Area *</label>
+                    <select class="form-control" id="receip_code">
+                        <option th:value="null">Please select</option>
+                        <option th:each="province : ${lstProvinces}" th:value="${province.getId()}" th:text="${province.getDesc()}">code
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label for="def_dlt_charge">Default DLT Charge *</label>
+                    <input type="text" class="form-control" id="dlt_charge" th:field="*{dltCharge}"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label for="def_dlt_wage">Wage *</label>
+                    <input type="text" class="form-control" id="dlt_wage" th:field="*{dltWage}"/>
+                </div>
+            </div>
+
+            <br/>
+
+            <!--BUTTON DIV -->
+            <div class="row">
+                <div class="col-sm-4">
+                    <button class="btn btn-success" id="btnAddArea"><span class="glyphicon glyphicon-plus"></span> Add </button>
+                    <button class="btn btn-info" id="btnRefreshArea"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+</section>
+
+<section layout:fragment="footer-js">
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.1/js/responsive.bootstrap.min.js"></script>
+    <!--<script type="text/javascript" th:src="@{/js/operation.js}"></script>-->
+    <script type="text/javascript" th:inline="javascript"></script>
+    <script type="text/javascript" th:inline="javascript">
+        $(function () {
+            var receiptList = [[${lstReceipts}]];
+            console.log("DATA", receiptList);
+
+            //Bind receipt list to operation view
+
+
+        });
+    </script>
+
+</section>
+
+</body>
+</html>

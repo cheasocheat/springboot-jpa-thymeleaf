@@ -1,6 +1,9 @@
 package com.glf.test.glftest.domain;
 
 import com.glf.test.glftest.domain.base.BaseEntity;
+import com.glf.test.glftest.util.RecordStatus;
+
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -15,10 +18,18 @@ public class Operation extends BaseEntity{
     private String code;
     private String desc;
     private Double price;
-    private Double defDtlChange;
-    private double defDtlWage;
+    private Double defDltCharge;
+    private double defDltWage;
     private Receipt receipt;
     private List<OperationArea> lstOpeAreas;
+
+    public Operation(){
+        this.setCreatedUser("Socheat");
+        this.setUpdatedUser("Socheat");
+        this.setCreatedAt(new Date());
+        this.setUpdatedAt(new Date());
+        this.setStatus(RecordStatus.PUB);
+    }
 
     @Override
     @Id
@@ -62,22 +73,23 @@ public class Operation extends BaseEntity{
         this.price = price;
     }
 
-    @Column(name = "def_dtl_change", nullable = false)
-    public Double getDefDtlChange() {
-        return defDtlChange;
+
+    @Column(name = "def_dlt_charge", nullable = false)
+    public Double getDefDltCharge() {
+        return defDltCharge;
     }
 
-    public void setDefDtlChange(Double defDtlChange) {
-        this.defDtlChange = defDtlChange;
+    public void setDefDltCharge(Double defDltCharge) {
+        this.defDltCharge = defDltCharge;
     }
 
-    @Column(name = "def_dtl_wage", nullable = false)
-    public double getDefDtlWage() {
-        return defDtlWage;
+    @Column(name = "def_dlt_wage", nullable = false)
+    public double getDefDltWage() {
+        return defDltWage;
     }
 
-    public void setDefDtlWage(double defDtlWage) {
-        this.defDtlWage = defDtlWage;
+    public void setDefDltWage(double defDltWage) {
+        this.defDltWage = defDltWage;
     }
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "operation")
