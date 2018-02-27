@@ -1,7 +1,10 @@
 package com.glf.test.glftest.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.glf.test.glftest.domain.base.BaseEntity;
 import com.glf.test.glftest.util.RecordStatus;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 import java.util.List;
@@ -19,8 +22,8 @@ public class Operation extends BaseEntity{
     private String desc;
     private Double price;
     private Double defDltCharge;
-    private double defDltWage;
-    private Receipt receipt;
+    private Double defWage;
+    private Long receiptId;
     private List<OperationArea> lstOpeAreas;
 
     public Operation(){
@@ -35,6 +38,7 @@ public class Operation extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "op_id", nullable = false , unique = true)
+    @Value("#{target.id}")
     public Long getId() {
         return super.getId();
     }
@@ -83,25 +87,27 @@ public class Operation extends BaseEntity{
         this.defDltCharge = defDltCharge;
     }
 
-    @Column(name = "def_dlt_wage", nullable = false)
-    public double getDefDltWage() {
-        return defDltWage;
+
+    @Column(name = "def_wage", nullable = false)
+    public Double getDefWage() {
+        return defWage;
     }
 
-    public void setDefDltWage(double defDltWage) {
-        this.defDltWage = defDltWage;
+    public void setDefWage(Double defWage) {
+        this.defWage = defWage;
     }
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "operation")
-    public Receipt getReceipt() {
-        return receipt;
+    @Column(name = "receipt_id")
+    public Long getReceiptId() {
+        return receiptId;
     }
 
-    public void setReceipt(Receipt receipt) {
-        this.receipt = receipt;
+    public void setReceiptId(Long receiptId) {
+        this.receiptId = receiptId;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "operation")
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = OperationArea.class, mappedBy = "operation", cascade = CascadeType.ALL)
     public List<OperationArea> getLstOpeAreas() {
         return lstOpeAreas;
     }

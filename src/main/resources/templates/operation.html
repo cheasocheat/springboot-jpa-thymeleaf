@@ -3,9 +3,17 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="layout/layout">
 <head>
-    <title>Welcome to One Event</title>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
+    <title>Welcome to GL Test</title>
+    <!-- <link rel="stylesheet" type="text/css" th:href="@{/css/responsive.bootstrap.css}"/>
+     <link rel="stylesheet" type="text/css" th:href="@{/css/responsive.bootstrap.min.css}"/>
+     <link rel="stylesheet" type="text/css" th:href="@{/css/responsive.dataTables.css}"/>
+     <link rel="stylesheet" type="text/css" th:href="@{/css/responsive.dataTables.min.css}"/>
+     <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.dataTables.min.css}"/>
+     <link rel="stylesheet" type="text/css" th:href="@{/css/dataTables.bootstrap.css}"/>
+     <link rel="stylesheet" type="text/css" th:href="@{/css/dataTables.bootstrap.min.css}"/>-->
+    <link href="https://cdn.datatables.net/responsive/2.1.0/css/responsive.dataTables.min.css" rel="stylesheet"
+          media="screen"/>
+    <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet" media="screen"/>
 
 </head>
 
@@ -13,18 +21,19 @@
 
 <section layout:fragment="content">
     <!-- FORM OPERATION -->
-    <br/><br/>
-
-    <form class="form-horizontal" th:object="${operation}"  th:action="@{/operation/add}" method="post" id="formOperation">
+    <br/>
+    <form class="form-horizontal" th:object="${operation}" th:action="@{/operation}" method="post" id="formOperation">
         <div class="row">
             <h3>Operation</h3>
         </div>
+
         <div class="row">
             <div class="form-group col-md-4">
                 <label for="op_code">Operation Code *</label>
                 <input type="text" class="form-control" id="op_code" th:field="*{code}"/>
             </div>
         </div>
+
         <div class="row">
             <div class="form-group col-md-4">
                 <label for="op_desc">Operation Desc *</label>
@@ -32,16 +41,18 @@
             </div>
         </div>
 
+
         <div class="row">
             <div class="form-group col-md-4">
                 <label for="receip_code">Receipt Code *</label>
-                <select class="form-control" id="receip_code">
-                    <option th:value="null">Please select</option>
-                    <option th:each="receipt : ${lstReceipts}" th:value="${receipt.getId()}" th:text="${receipt.getCode()}">code
+                <select class="form-control" th:field="*{receiptId}" id="receip_code">
+                    <option th:each="receipt : ${lstReceipts}" th:value="${receipt.getId()}"
+                            th:text="${receipt.getCode()}">code
                     </option>
                 </select>
             </div>
         </div>
+
         <div class="row">
             <div class="form-group col-md-4">
                 <label for="op_price">Price *</label>
@@ -51,15 +62,17 @@
 
         <div class="row">
             <div class="form-group col-md-4">
-                <label for="def_dlt_charge">Default DLT Charge *</label>
-                <input th:readonly="readonly" type="text" class="form-control" id="def_dlt_charge" th:value="${0.0}" th:field="*{defDltCharge}"/>
+                <label for="def_dlt_charge">Default Wage *</label>
+                <input th:readonly="readonly" type="text" class="form-control" id="def_dlt_charge"
+                       th:value="${operation.defDltCharge}" th:field="*{defDltCharge}"/>
             </div>
         </div>
 
         <div class="row">
             <div class="form-group col-md-4">
-                <label for="def_dlt_wage">Default Wage *</label>
-                <input th:readonly="readonly" type="text" class="form-control" id="def_dlt_wage" th:value="${0.0}" th:field="*{defDltWage}"/>
+                <label for="def_wage">Default Wage *</label>
+                <input th:readonly="readonly" type="text" class="form-control" id="def_wage"
+                       th:value="${operation.defWage}" th:field="*{defWage}"/>
             </div>
         </div>
 
@@ -68,13 +81,13 @@
         <!--BUTTON DIV -->
         <div class="row">
             <div class="col-sm-4">
-                <button class="btn btn-success" id="btnAdd"><span class="glyphicon glyphicon-plus"></span> Add </button>
-                <button class="btn btn-info" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                <button class="btn btn-success" id="btnAdd"><span class="glyphicon glyphicon-plus"></span> Add</button>
+                <button class="btn btn-info" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span> Refresh
+                </button>
             </div>
         </div>
 
     </form>
-
 
 
     <br/><br/>
@@ -82,7 +95,8 @@
     <div>
         <table id="operation_table" class="table table-bordered dt-responsive" cellspacing="0" width="100%">
             <thead>
-            <tr class="list_header_ag">
+            <tr class="list_header">
+                <th>ID</th>
                 <th>Operation Code</th>
                 <th>Operation Desc</th>
                 <th>Receipt Code</th>
@@ -95,21 +109,22 @@
         </table>
     </div>
 
-    <br/><br/>
 
     <div class="row">
-        <form class="form-horizontal" th:object="${opeationArea}"  th:action="@{/operation_area/add}" method="post" id="formOperationArea">
+        <form class="form-horizontal" th:object="${operationArea}" th:action="@{/operationarea}" method="post"
+              id="formOperationArea">
             <div class="row">
                 <h3>Operation By Area</h3>
             </div>
 
+            <input type="hidden" name="operation" id="operation"/>
 
             <div class="row">
                 <div class="form-group col-md-4">
                     <label for="receip_code">Province Area *</label>
-                    <select class="form-control" id="receip_code">
-                        <option th:value="null">Please select</option>
-                        <option th:each="province : ${lstProvinces}" th:value="${province.getId()}" th:text="${province.getDesc()}">code
+                    <select class="form-control" id="receip_code" th:field="*{provinceId}">
+                        <option th:each="province : ${lstProvinces}" th:value="${province.getId()}"
+                                th:text="${province.getDesc()}">code
                         </option>
                     </select>
                 </div>
@@ -117,15 +132,15 @@
 
             <div class="row">
                 <div class="form-group col-md-4">
-                    <label for="def_dlt_charge">Default DLT Charge *</label>
+                    <label for="dlt_charge">DLT Charge *</label>
                     <input type="text" class="form-control" id="dlt_charge" th:field="*{dltCharge}"/>
                 </div>
             </div>
 
             <div class="row">
                 <div class="form-group col-md-4">
-                    <label for="def_dlt_wage">Wage *</label>
-                    <input type="text" class="form-control" id="dlt_wage" th:field="*{dltWage}"/>
+                    <label for="wage">Wage *</label>
+                    <input type="text" class="form-control" id="wage" th:field="*{wage}"/>
                 </div>
             </div>
 
@@ -134,30 +149,174 @@
             <!--BUTTON DIV -->
             <div class="row">
                 <div class="col-sm-4">
-                    <button class="btn btn-success" id="btnAddArea"><span class="glyphicon glyphicon-plus"></span> Add </button>
-                    <button class="btn btn-info" id="btnRefreshArea"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                    <button class="btn btn-success" id="btnAddArea"><span class="glyphicon glyphicon-plus"></span> Add
+                    </button>
                 </div>
+            </div>
+
+
+            <br/><br/>
+            <!-- DATA TABLE DEV -->
+            <div>
+                <table id="operation_area_table" class="table table-bordered dt-responsive" cellspacing="0"
+                       width="100%">
+                    <thead>
+                    <tr class="list_header">
+                        <th>Id</th>
+                        <th>Province Area *</th>
+                        <th>DLT Change</th>
+                        <th>Wage</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                </table>
             </div>
 
         </form>
 
     </div>
+    <br/><br/><br/><br/><br/><br/>
 </section>
 
 <section layout:fragment="footer-js">
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.1/js/responsive.bootstrap.min.js"></script>
-    <!--<script type="text/javascript" th:src="@{/js/operation.js}"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js"></script>
+
+    <!--<script th:src="@{/js/operation.js}"></script>
+    <script th:src="@{/js/dataTables.responsive.js}"></script>
+    <script th:src="@{/js/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/js/responsive.bootstrap.js}"></script>
+    <script th:src="@{/js/responsive.bootstrap.min.js}"></script>
+    <script th:src="@{/js/jquery.dataTables.min.js}"></script>
+    <script src="static/js/dataTables.bootstrap.js" th:src="@{/js/dataTables.bootstrap.js}"></script>
+    <script src="static/js/dataTables.bootstrap.min.js" th:src="@{/js/dataTables.bootstrap.min.js}"></script>-->
     <script type="text/javascript" th:inline="javascript"></script>
     <script type="text/javascript" th:inline="javascript">
         $(function () {
-            var receiptList = [[${lstReceipts}]];
-            console.log("DATA", receiptList);
+            //table
+            var operation_area_table;
+            var operation_table;
+            var data = [];
+            var tempOperationId;
 
-            //Bind receipt list to operation view
+            //Get Via Innline
+            var operationList = [[${lstOperations}]];
+
+            //Loop data to data table
+            $.each(operationList, function (idx, obj) {
+                data.push([obj.id, obj.code, obj.desc, obj.receiptId, obj.price, obj.defDltCharge, obj.defWage, ""]);
+            });
+
+            //Operation Data Table
+            operation_table = $('#operation_table').DataTable({
+                data: data,
+                deferRender: true,
+                scrollCollapse: true,
+                scroller: true,
+                "bSort": false,
+                "pageLength": 10,
+                "order": [[0, "desc"]],
+                "columnDefs": [{
+                    "targets": -1,
+                    "data": null,
+                    "defaultContent": '<button class="btn-area" type="button"> Add Area</button>'
+                    + '<button class="btn-delete"  type="button">Delete</button>'
+                }],
+                "searchCols": []
+            });
+
+
+            //Click on btnViewArea
+            $('#operation_table tbody').on('click', '.btn-area', function (e) {
+                var data = operation_table.row($(this).parents('tr')).data();
+                if (operation_area_table) {
+                    operation_area_table.destroy()
+                }
+                if (data) {
+                    tempOperationId = data[0];
+                    $.ajax({
+                        url: '/gltest/api/v1/operationareas?operate_id=' + tempOperationId,
+                        type: 'GET',
+                        success: function (result) {
+                            loadingOperationArea(result);
+                        }
+                    });
+                }
+
+            });
+
+            //Click on btnDelete
+            $('#operation_table tbody').on('click', '.btn-delete', function () {
+                var data = operation_table.row($(this).parents('tr')).data();
+                if (data) {
+                    $.ajax({
+                        url: '/gltest/api/v1/operation/' + data[0],
+                        type: 'DELETE',
+                        success: function (result) {
+                            window.location.href = '/gltest/operation';
+                        }
+                    });
+                }
+            });
+
+
+            //Button Area
+            $('#btnAddArea').click(function (e) {
+                e.preventDefault();
+                if (operation_area_table) { //That mean they click on area
+                    console.log(tempOperationId);
+                    $("#operation").val(tempOperationId);
+                    //alert($("#operation").val());
+                    $('#formOperationArea').submit();
+                } else {
+                    alert("No operation was selected");
+                }
+            });
+
+
+            /**
+             * Load Area
+             * */
+
+            var loadingOperationArea = function (operationAreaDatas) {
+                /**
+                 * OperationArea
+                 *
+                 **/
+                var data = [];
+                $.each(operationAreaDatas, function (idx, obj) {
+                    data.push([obj.id, obj.provinceId, obj.dltCharge, obj.wage, ""]);
+                });
+                operation_area_table = $('#operation_area_table').DataTable({
+                    data: data,
+                    deferRender: true,
+                    scrollCollapse: true,
+                    scroller: true,
+                    "bSort": false,
+                    "pageLength": 10,
+                    "order": [[0, "desc"]],
+                    "columnDefs": [{
+                        "targets": -1,
+                        "data": null,
+                        "defaultContent": '<button class="btn-delete"  type="button">Delete</button>'
+                    }],
+                    "searchCols": []
+                });
+
+                $('#operation_area_table tbody').on('click', '.btn-delete', function () {
+                    var data = operation_area_table.row($(this).parents('tr')).data();
+                    if (data) {
+                        $.ajax({
+                            url: '/gltest/api/v1/operationareas/' + data[0],
+                            type: 'DELETE',
+                            success: function (result) {
+                                window.location.href = '/gltest/operation';
+                            }
+                        });
+                    }
+                });
+            }
 
 
         });

@@ -13,8 +13,8 @@ import java.util.List;
  */
 @Repository
 public interface ReceiptRepository extends JpaRepository<Receipt, Long>{
-    //Receipt findById(Long id);
-
-    @Query(value = "SELECT rec FROM tb_reecipt rec limit ?1 offset ?2", nativeQuery = true)
+    @Query(value = "SELECT rec FROM Receipt rec limit ?1 offset ?2", nativeQuery = true)
     List<Receipt> getListReceiptWithPagination(int limit, int offset);
+
+    Receipt findByCode(String code);
 }

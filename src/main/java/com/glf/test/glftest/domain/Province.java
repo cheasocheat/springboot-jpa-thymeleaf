@@ -1,8 +1,10 @@
 package com.glf.test.glftest.domain;
 
 import com.glf.test.glftest.domain.base.BaseEntity;
+import com.glf.test.glftest.util.RecordStatus;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Developer : cheasocheat
@@ -11,6 +13,14 @@ import javax.persistence.*;
 @Entity(name = "tb_province")
 public class Province extends BaseEntity{
     private String desc;
+
+    public Province(){
+        this.setCreatedUser("Socheat");
+        this.setCreatedAt(new Date());
+        this.setUpdatedUser("Socheat");
+        this.setUpdatedAt(new Date());
+        this.setStatus(RecordStatus.PUB);
+    }
 
     @Override
     @Id

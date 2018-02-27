@@ -1,8 +1,13 @@
 package com.glf.test.glftest.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.glf.test.glftest.domain.base.BaseEntity;
+import com.glf.test.glftest.util.RecordStatus;
+import groovy.transform.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Developer : cheasocheat
@@ -12,8 +17,16 @@ import javax.persistence.*;
 public class OperationArea extends BaseEntity {
     private Long provinceId;
     private Double dltCharge;
-    private Double dltWage;
+    private Double wage;
     private Operation operation;
+
+    public OperationArea(){
+        this.setCreatedUser("Socheat");
+        this.setCreatedAt(new Date());
+        this.setUpdatedUser("Socheat");
+        this.setUpdatedAt(new Date());
+        this.setStatus(RecordStatus.PUB);
+    }
 
     @Override
     @Id
@@ -46,17 +59,21 @@ public class OperationArea extends BaseEntity {
     public void setDltCharge(Double dltCharge) {
         this.dltCharge = dltCharge;
     }
-    @Column(name = "op_dlt_wage")
-    public Double getDltWage() {
-        return dltWage;
+
+
+    @Column(name = "op_wage")
+    public Double getWage() {
+        return wage;
     }
 
-    public void setDltWage(Double dltWage) {
-        this.dltWage = dltWage;
+    public void setWage(Double wage) {
+        this.wage = wage;
     }
 
+
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "op_id", nullable = false)
+    @JoinColumn(name = "op_id")
     public Operation getOperation() {
         return operation;
     }

@@ -13,7 +13,6 @@ import java.util.Date;
 @Entity(name = "tb_receipt")
 public class Receipt extends BaseEntity {
     private String code;
-    private Operation operation;
 
     public Receipt(){
         this.setCreatedUser("Socheat");
@@ -50,13 +49,4 @@ public class Receipt extends BaseEntity {
         this.code = code;
     }
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
-    public Operation getOperation() {
-        return operation;
-    }
-
-    public void setOperation(Operation operation) {
-        this.operation = operation;
-    }
 }

@@ -5,6 +5,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Date;
  * Created on 2/27/18 09:43
  */
 @MappedSuperclass
-public class BaseEntity {
+public class BaseEntity implements Serializable{
     protected Long id = null;
     private RecordStatus status;
     private String createdUser;

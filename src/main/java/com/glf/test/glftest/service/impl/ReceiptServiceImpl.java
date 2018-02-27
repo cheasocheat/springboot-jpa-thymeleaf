@@ -41,15 +41,8 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @Override
-    public void updateReceipt(Long id ,Receipt receipt) {
-        Receipt dbReceipt = repository.findOne(id);
-        if(dbReceipt != null && receipt != null){
-            dbReceipt.setCode(receipt.getCode());
-            dbReceipt.setStatus(receipt.getStatus());
-            dbReceipt.setUpdatedUser(receipt.getUpdatedUser());
-            dbReceipt.setUpdatedAt(receipt.getUpdatedAt());
-            repository.save(dbReceipt);
-        }
+    public Receipt findByCode(String code) {
+        return repository.findByCode(code);
     }
 
     @Override

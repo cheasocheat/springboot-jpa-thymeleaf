@@ -6,9 +6,9 @@ import com.glf.test.glftest.domain.Province;
 import com.glf.test.glftest.domain.Receipt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import com.glf.test.glftest.webservice.configuration.RestConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +17,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletContext;
@@ -30,7 +28,7 @@ import javax.validation.Valid;
  * Created on 2/27/18 09:42
  */
 @Controller
-@RequestMapping(value = "/operation")
+@RequestMapping()
 public class OperationController {
 
     @Autowired
@@ -50,13 +48,20 @@ public class OperationController {
      * @param model
      * @return
      */
-    @RequestMapping(value = {"/home"}, method = RequestMethod.GET)
+    @GetMapping(value = {"", "/operation"})
     public String getOperationView(Model model) {
+
+        //Init Object
+        Operation operation = new Operation();
+        operation.setDefDltCharge(0.0);
+        operation.setDefWage(0.0);
+
         //Get Receipt code
         List<Receipt> lstReceipts = new ArrayList<>();
         List<Province> lstProvinces = new ArrayList<>();
+        List<Operation> lstOperations = new ArrayList<>();
 
-        String endPoint = servletContext.getContextPath() + RestConfig.REST_URL + RestConfig.REST_RECEIPT + "/list";
+        String endPoint = servletContext.getContextPath();
 
         logger.info("End Point = " + endPoint);
 
@@ -64,22 +69,33 @@ public class OperationController {
         HttpEntity<String> requestEntity = new HttpEntity<>(header);
 
         //Request to receipt endpoint to get receipt data
-        ResponseEntity<List<Receipt>> receiptResponse = restTemplate.exchange("http://localhost:8080/gltest/api/v1/receipt/list", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Receipt>>() {});
-        if(receiptResponse != null && receiptResponse.getStatusCode() == HttpStatus.OK){
+        ResponseEntity<List<Receipt>> receiptResponse = restTemplate.exchange("http://localhost:8080/gltest/api/v1/receipts", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Receipt>>() {
+        });
+        if (receiptResponse != null && receiptResponse.getStatusCode() == HttpStatus.OK) {
             lstReceipts = receiptResponse.getBody();
         }
 
         //Request to province endpoint to get province data
-        ResponseEntity<List<Province>> provinceResponse = restTemplate.exchange("http://localhost:8080/gltest/api/v1/province/list", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Province>>() {});
-        if(provinceResponse != null && provinceResponse.getStatusCode() == HttpStatus.OK){
+        ResponseEntity<List<Province>> provinceResponse = restTemplate.exchange("http://localhost:8080/gltest/api/v1/provinces", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Province>>() {
+        });
+        if (provinceResponse != null && provinceResponse.getStatusCode() == HttpStatus.OK) {
             lstProvinces = provinceResponse.getBody();
         }
 
+        //Request operation data
+        ResponseEntity<List<Operation>> operationResponse =
+                restTemplate.exchange("http://localhost:8080/gltest/api/v1/operations", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Operation>>() {
+                });
+        if (operationResponse != null && operationResponse.getStatusCode() == HttpStatus.OK) {
+            lstOperations = operationResponse.getBody();
+        }
+
         //Bind to model to display
-        model.addAttribute("operation", new Operation());
+        model.addAttribute("operation", operation);
         model.addAttribute("operationArea", new OperationArea());
         model.addAttribute("lstReceipts", lstReceipts);
-        model.addAttribute("lstProvinces", lstReceipts);
+        model.addAttribute("lstProvinces", lstProvinces);
+        model.addAttribute("lstOperations", lstOperations);
         return "operation";
     }
 
@@ -92,15 +108,76 @@ public class OperationController {
      * @param model
      * @return
      */
-    @RequestMapping(value = "/add")
+    @PostMapping(value = "/operation")
     public String addOperation(@ModelAttribute("operation") @Valid Operation operation,
                                BindingResult result, Model model) {
-        System.out.println(model);
-        System.out.println(result);
         if (operation != null) {
-
+            header.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Operation> requestEntity = new HttpEntity<>(operation, header);
+            try {
+                ResponseEntity<Operation> responseEntity =
+                        restTemplate.exchange("http://localhost:8080/gltest/api/v1/operation", HttpMethod.POST, requestEntity, Operation.class);
+                if (responseEntity != null) {
+                    if (responseEntity.getStatusCode().equals(HttpStatus.CREATED)) {
+                        return "redirect:/operation";
+                    } else if (responseEntity.getStatusCode().equals(HttpStatus.CONFLICT)) {
+                        return "redirect:/error";
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "redirect:/error";
+            }
         }
+        return "redirect:/error";
+    }
 
-        return "redirect:/operation";
+    @PostMapping(value = "/operationarea")
+    public String updateOperatoin(@ModelAttribute("operationArea") @Valid OperationArea operationArea,
+                                  @RequestParam(value = "operation") Long operationId) {
+        if (operationArea != null) {
+            header.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Operation> entity = new HttpEntity<>(header);
+            if(operationId > 0){
+                ResponseEntity<Operation> operationResponseEntity = restTemplate.exchange("http://localhost:8080/gltest/api/v1/operations/" + operationId, HttpMethod.GET, entity, new ParameterizedTypeReference<Operation>() {
+                });
+                if (operationResponseEntity != null && operationResponseEntity.getStatusCode() == HttpStatus.OK) {
+                    Operation operation = operationResponseEntity.getBody();
+                    if(operation != null){
+                        operation.setLstOpeAreas(Arrays.asList(
+                            operationArea
+                        ));
+
+
+                        //Save to OperationArea
+                        operationArea.setOperation(operation);
+                        HttpEntity<OperationArea> reqEntity = new HttpEntity<>(operationArea,header);
+                        ResponseEntity<OperationArea> resEntity =
+                                restTemplate.exchange("http://localhost:8080/gltest/api/v1/operationarea", HttpMethod.POST, reqEntity, OperationArea.class);
+                        if (resEntity != null) {
+
+                        }
+
+                        //Update Operation
+                       /* ResponseEntity<OperationArea> resEntity =
+                                restTemplate.exchange("http://localhost:8080/gltest/api/v1/operationarea", HttpMethod.PUT, requestEntity, OperationArea.class);
+                        if (resEntity != null) {
+                            if (resEntity.getStatusCode().equals(HttpStatus.CREATED)) {
+                                return "redirect:/operation";
+                            } else if (resEntity.getStatusCode().equals(HttpStatus.CONFLICT)) {
+                                return "redirect:/error";
+                            }
+                        }*/
+                    }
+                }
+            }
+        }
+        return "redirect:/error";
+    }
+
+
+    @GetMapping(value = "/error")
+    public String displayError() {
+        return "error";
     }
 }
